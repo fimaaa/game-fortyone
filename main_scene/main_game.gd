@@ -685,8 +685,16 @@ func _create_game_options_panel():
 	$UILayer.add_child(game_options_overlay)
 
 	game_options_panel = Panel.new()
-	game_options_panel.position = Vector2(CW / 2 - 180, CH / 2 - 280)
-	game_options_panel.size = Vector2(360, 560)
+	var panel_style = StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.12, 0.12, 0.12, 1)
+	panel_style.corner_radius_top_left = 12
+	panel_style.corner_radius_top_right = 12
+	panel_style.corner_radius_bottom_left = 12
+	panel_style.corner_radius_bottom_right = 12
+
+	game_options_panel.add_theme_stylebox_override("panel", panel_style)
+	game_options_panel.position = Vector2(CW / 2 - 180, CH / 2 - 330)
+	game_options_panel.size = Vector2(360, 660)
 	game_options_panel.visible = false
 	$UILayer.add_child(game_options_panel)
 

@@ -1,0 +1,28 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://csywd0wi3i7wf" path="res://main_scene/card.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://ben7qqx34vpkq" path="res://assets/card_back.png" id="2_back"]
+[ext_resource type="Texture2D" uid="uid://cevijt3lotxgr" path="res://assets/card/default/card_spades_A.png" id="3_face"]
+
+[node name="Card" type="Control"]
+anchors_preset = 0
+offset_right = 175.0
+offset_bottom = 245.0
+mouse_filter = 0
+script = ExtResource("1_script")
+
+[node name="Face" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 175.0
+offset_bottom = 245.0
+texture = ExtResource("3_face")
+expand_mode = 3
+stretch_mode = 0
+
+[node name="Back" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 175.0
+offset_bottom = 245.0
+texture = ExtResource("2_back")
+expand_mode = 3
+stretch_mode = 0

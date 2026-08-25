@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://x4vbstscilrc"]
+
+[ext_resource type="Script" uid="uid://dq3uttr2i2mgu" path="res://main_scene/main_game.gd" id="1_main"]
+
+[node name="MainGame" type="Node2D" unique_id=387675037]
+script = ExtResource("1_main")
+
+[node name="UILayer" type="CanvasLayer" parent="." unique_id=1763459014]
+
+[node name="StatusLabel" type="Label" parent="UILayer" unique_id=1876753635]
+offset_left = 200.0
+offset_top = 8.0
+offset_right = 1166.0
+offset_bottom = 38.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "Four One"
+horizontal_alignment = 1
+
+[node name="PileLabel" type="Label" parent="UILayer" unique_id=1970764656]
+offset_left = 630.0
+offset_top = 341.0
+offset_right = 736.0
+offset_bottom = 369.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "Pile: 52"
+horizontal_alignment = 1
+
+[node name="ActionButton" type="Button" parent="UILayer" unique_id=1144266254]
+offset_left = 1200.0
+offset_top = 740.0
+offset_right = 1356.0
+offset_bottom = 766.0
+text = "Draw from Pile"
+
+[node name="ChoiceButton" type="Button" parent="UILayer" unique_id=109670104]
+offset_left = 1040.0
+offset_top = 740.0
+offset_right = 1196.0
+offset_bottom = 766.0
+text = "Take from Grave"
+
+[node name="DiscardButton" type="Button" parent="UILayer" unique_id=1271007171]
+offset_left = 1200.0
+offset_top = 740.0
+offset_right = 1356.0
+offset_bottom = 766.0
+text = "Discard Last Card"
+
+[node name="FinishButton" type="Button" parent="UILayer" unique_id=783015954]
+offset_left = 880.0
+offset_top = 740.0
+offset_right = 1036.0
+offset_bottom = 766.0
+text = "Finish Game"
+
+[node name="OptionsButton" type="Button" parent="UILayer" unique_id=639312651]
+offset_left = 10.0
+offset_top = 740.0
+offset_right = 100.0
+offset_bottom = 766.0
+text = "Options"
+
+[node name="PlayAgainButton" type="Button" parent="UILayer" unique_id=1906609272]
+offset_left = 580.0
+offset_top = 400.0
+offset_right = 786.0
+offset_bottom = 440.0
+text = "Play Again"

@@ -6,7 +6,6 @@ const INITIAL_HAND_SIZE := 4
 const BOT_WAIT := 2.0
 const CARD_SCENE = preload("res://main_scene/card.tscn")
 const CARD_DB_PATH = "res://main_scene/card_database.json"
-const BG_FOLDER = "res://backgrounds/"
 const CARD_ASSET_FOLDER = "res://assets/card/"
 const CONFIG_PATH = "user://settings.cfg"
 const GAME_CONFIG_PATH = "user://game_settings.cfg"
@@ -31,12 +30,6 @@ const CARD_STYLES = {
 	"Crimson": {"modulate": Color(1.0, 0.4, 0.4), "unlock_wins": 3},
 	"Emerald": {"modulate": Color(0.4, 1.0, 0.5), "unlock_wins": 5},
 	"Royal": {"modulate": Color(0.5, 0.4, 1.0), "unlock_wins": 10},
-}
-
-const BG_UNLOCK_WINS = {
-	"img24.jpg": 0, "img25.jpg": 1, "img26.jpg": 3, "img27.jpg": 5,
-	"img28.jpg": 8, "img29.jpg": 12, "img30.jpg": 16, "img31.jpg": 20,
-	"img32.jpg": 25, "img33.jpg": 30, "img34.jpg": 40, "img35.jpg": 50,
 }
 
 var card_database : Array = []
@@ -82,15 +75,20 @@ const BOT_NAME_MAP = {
 @onready var options_button : Button = $UILayer/OptionsButton
 @onready var play_again_button : Button = $UILayer/PlayAgainButton
 
-var hand_pos : Array = []
-var grave_pos : Array = []
+@onready var hand_pos : Array = [
+	$Positions/Hand0, $Positions/Hand1, $Positions/Hand2, $Positions/Hand3
+]
+@onready var grave_pos : Array = [
+	$Positions/Grave0, $Positions/Grave1, $Positions/Grave2, $Positions/Grave3
+]
+@onready var pile_pos : Node2D = $Positions/Pile
 var round_no_takes := 0
 var pile_bg : ColorRect
 var grave_bgs : Array = []
 var grave_panel : Panel
 var grave_list_label : Label
 var grave_close_btn : Button
-var game_options_panel : Panel
+var game_options_panel : ColorRect
 var game_options_overlay : ColorRect
 var game_options_visible := false
 var card_style_dialog : Panel
@@ -164,19 +162,6 @@ func _ready():
 	_create_game_options_panel()
 	_create_card_style_dialog()
 
-	hand_pos = [
-		Vector2(CW / 2 - 100, CH - 168),
-		Vector2(0, CH / 2 - 110),
-		Vector2(CW / 2 - 100, 0),
-		Vector2(CW - 128, CH / 2 - 110)
-	]
-	grave_pos = [
-		Vector2(CW / 2 - 30, CH - 165),
-		Vector2(210, CH / 2),
-		Vector2(CW / 2 - 30, 280),
-		Vector2(CW - 210, CH / 2)
-	]
-
 	_load_db()
 	_create_areas()
 	_start()
@@ -213,13 +198,13 @@ func _create_areas():
 			"hand_node": null, "grave_node": null, "label_node": null
 		}
 		var h = Node2D.new()
-		h.position = hand_pos[i]
+		h.position = hand_pos[i].position
 		h.name = "H%d" % i
 		add_child(h)
 		pd.hand_node = h
 
 		var g = Node2D.new()
-		g.position = grave_pos[i]
+		g.position = grave_pos[i].position
 		g.name = "G%d" % i
 		add_child(g)
 		pd.grave_node = g
@@ -246,8 +231,7 @@ func _create_areas():
 		players.append(pd)
 
 	pile_bg = ColorRect.new()
-	pile_bg.position = Vector2(CW / 2, CH / 2  + 40)
-	#pile_bg.size = Vector2(1, 2)
+	pile_bg.position = pile_pos.position
 	pile_bg.color = Color(0.15, 0.15, 0.15, 0.5)
 	pile_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(pile_bg)
@@ -684,211 +668,33 @@ func _create_game_options_panel():
 	game_options_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	$UILayer.add_child(game_options_overlay)
 
-	game_options_panel = Panel.new()
-	var panel_style = StyleBoxFlat.new()
-	panel_style.bg_color = Color(0.12, 0.12, 0.12, 1)
-	panel_style.corner_radius_top_left = 12
-	panel_style.corner_radius_top_right = 12
-	panel_style.corner_radius_bottom_left = 12
-	panel_style.corner_radius_bottom_right = 12
-
-	game_options_panel.add_theme_stylebox_override("panel", panel_style)
-	game_options_panel.position = Vector2(CW / 2 - 180, CH / 2 - 330)
-	game_options_panel.size = Vector2(360, 660)
+	var scene = preload("res://ui/options_panel.tscn")
+	game_options_panel = scene.instantiate()
 	game_options_panel.visible = false
 	$UILayer.add_child(game_options_panel)
-
-	var title_lbl = Label.new()
-	title_lbl.text = "Options"
-	title_lbl.position = Vector2(130, 10)
-	title_lbl.size = Vector2(100, 30)
-	title_lbl.add_theme_font_size_override("font_size", 18)
-	game_options_panel.add_child(title_lbl)
-
-	var vol_label = Label.new()
-	vol_label.text = "Volume"
-	vol_label.position = Vector2(20, 50)
-	vol_label.size = Vector2(80, 30)
-	vol_label.add_theme_font_size_override("font_size", 14)
-	game_options_panel.add_child(vol_label)
-
-	var vol_slider = HSlider.new()
-	vol_slider.position = Vector2(100, 50)
-	vol_slider.size = Vector2(230, 30)
-	vol_slider.min_value = 0.0
-	vol_slider.max_value = 1.0
-	vol_slider.value = db_to_linear(AudioServer.get_bus_volume_db(0))
-	vol_slider.step = 0.05
-	vol_slider.value_changed.connect(func(val): AudioServer.set_bus_volume_db(0, linear_to_db(val)))
-	game_options_panel.add_child(vol_slider)
-
-	var mute_btn = Button.new()
-	mute_btn.text = "Mute"
-	mute_btn.position = Vector2(100, 90)
-	mute_btn.size = Vector2(80, 28)
-	mute_btn.toggle_mode = true
-	mute_btn.button_pressed = AudioServer.is_bus_mute(0)
-	mute_btn.pressed.connect(func(): AudioServer.set_bus_mute(0, mute_btn.button_pressed))
-	game_options_panel.add_child(mute_btn)
-
-	var res_label = Label.new()
-	res_label.text = "Resolution"
-	res_label.position = Vector2(20, 130)
-	res_label.size = Vector2(80, 30)
-	res_label.add_theme_font_size_override("font_size", 14)
-	game_options_panel.add_child(res_label)
-
-	var res_opt = OptionButton.new()
-	res_opt.position = Vector2(100, 130)
-	res_opt.size = Vector2(230, 30)
-	res_opt.add_item("1920 x 1080")
-	res_opt.add_item("1366 x 768")
-	res_opt.add_item("1280 x 720")
-	res_opt.add_item("1024 x 576")
-	res_opt.selected = 1
-	res_opt.item_selected.connect(func(idx):
-		var res = [Vector2i(1920,1080), Vector2i(1366,768), Vector2i(1280,720), Vector2i(1024,576)]
-		DisplayServer.window_set_size(res[idx])
+	game_options_panel.set_total_wins(total_wins)
+	game_options_panel.set_card_style_summary(_get_card_style_summary())
+	game_options_panel.show_game_buttons(true)
+	game_options_panel.set_initial_volume(db_to_linear(AudioServer.get_bus_volume_db(0)))
+	game_options_panel.set_initial_mute(AudioServer.is_bus_mute(0))
+	game_options_panel.close_pressed.connect(func(): _close_options())
+	game_options_panel.bg_color_changed.connect(func(color):
+		current_bg_color = color
+		current_bg_image = ""
+		_apply_background()
+		_save_config()
 	)
-	game_options_panel.add_child(res_opt)
-
-	var bg_sep = HSeparator.new()
-	bg_sep.position = Vector2(20, 175)
-	bg_sep.size = Vector2(320, 2)
-	game_options_panel.add_child(bg_sep)
-
-	var bg_title = Label.new()
-	bg_title.text = "Background"
-	bg_title.position = Vector2(20, 185)
-	bg_title.size = Vector2(120, 30)
-	bg_title.add_theme_font_size_override("font_size", 14)
-	game_options_panel.add_child(bg_title)
-
-	var color_title = Label.new()
-	color_title.text = "Color:"
-	color_title.position = Vector2(20, 215)
-	color_title.size = Vector2(50, 25)
-	color_title.add_theme_font_size_override("font_size", 12)
-	game_options_panel.add_child(color_title)
-
-	var cx := 75.0
-	var cy := 215.0
-	for cname in BG_COLORS:
-		var swatch = Button.new()
-		swatch.position = Vector2(cx, cy)
-		swatch.size = Vector2(28, 28)
-		swatch.modulate = BG_COLORS[cname]
-		swatch.tooltip_text = cname
-		var captured_color = BG_COLORS[cname]
-		swatch.pressed.connect(func():
-			current_bg_color = captured_color
-			current_bg_image = ""
-			_apply_background()
-			_save_config()
-		)
-		game_options_panel.add_child(swatch)
-		cx += 32.0
-		if cx > 330.0:
-			cx = 75.0
-			cy += 32.0
-
-	var img_title = Label.new()
-	img_title.text = "Images:"
-	img_title.position = Vector2(20, cy + 40)
-	img_title.size = Vector2(50, 25)
-	img_title.add_theme_font_size_override("font_size", 12)
-	game_options_panel.add_child(img_title)
-
-	var img_folder_btn = Button.new()
-	img_folder_btn.text = "Open Folder"
-	img_folder_btn.position = Vector2(260, cy + 40)
-	img_folder_btn.size = Vector2(80, 25)
-	img_folder_btn.add_theme_font_size_override("font_size", 11)
-	img_folder_btn.pressed.connect(func(): OS.shell_open(ProjectSettings.globalize_path(BG_FOLDER)))
-	game_options_panel.add_child(img_folder_btn)
-
-	var img_grid_y = cy + 70.0
-	var img_grid_x := 20.0
-	var dir = DirAccess.open(BG_FOLDER)
-	if dir:
-		dir.list_dir_begin()
-		var fname = dir.get_next()
-		while fname != "":
-			if not dir.current_is_dir():
-				var ext = fname.get_extension().to_lower()
-				if ext in ["png", "jpg", "jpeg", "webp"]:
-					var is_unlocked = _is_bg_unlocked(fname)
-					var thumb = Button.new()
-					thumb.position = Vector2(img_grid_x, img_grid_y)
-					thumb.size = Vector2(50, 50)
-					thumb.expand_icon = true
-					thumb.tooltip_text = fname.get_basename() + (" (Win %d+)" % BG_UNLOCK_WINS.get(fname, 999)) if not is_unlocked else fname
-					var full_path = BG_FOLDER + fname
-					if is_unlocked:
-						var tex = load(full_path)
-						if tex:
-							thumb.icon = tex
-					else:
-						thumb.text = "🔒"
-						thumb.add_theme_font_size_override("font_size", 20)
-					var captured_path = full_path
-					var captured_unlocked = is_unlocked
-					thumb.pressed.connect(func():
-						if captured_unlocked:
-							current_bg_color = Color.BLACK
-							current_bg_image = captured_path
-							_apply_background()
-							_save_config()
-					)
-					if not is_unlocked:
-						thumb.disabled = true
-					game_options_panel.add_child(thumb)
-					img_grid_x += 55.0
-					if img_grid_x > 320.0:
-						img_grid_x = 20.0
-						img_grid_y += 55.0
-			fname = dir.get_next()
-
-	var style_sep = HSeparator.new()
-	style_sep.position = Vector2(20, img_grid_y + 60)
-	style_sep.size = Vector2(320, 2)
-	game_options_panel.add_child(style_sep)
-
-	var cs_label = Label.new()
-	cs_label.text = "Card Style: %s" % _get_card_style_summary()
-	cs_label.position = Vector2(20, img_grid_y + 70)
-	cs_label.size = Vector2(220, 25)
-	cs_label.add_theme_font_size_override("font_size", 12)
-	game_options_panel.add_child(cs_label)
-
-	var cs_btn = Button.new()
-	cs_btn.text = "Change..."
-	cs_btn.position = Vector2(250, img_grid_y + 68)
-	cs_btn.size = Vector2(90, 28)
-	cs_btn.pressed.connect(func(): _open_card_style_dialog())
-	game_options_panel.add_child(cs_btn)
-
-	var menu_btn = Button.new()
-	menu_btn.text = "Main Menu"
-	menu_btn.position = Vector2(90, img_grid_y + 105)
-	menu_btn.size = Vector2(120, 35)
-	menu_btn.pressed.connect(func(): get_tree().change_scene_to_file("res://main_menu/main_menu.tscn"))
-	game_options_panel.add_child(menu_btn)
-
-	var quit_btn = Button.new()
-	quit_btn.text = "Exit Game"
-	quit_btn.position = Vector2(90, img_grid_y + 145)
-	quit_btn.size = Vector2(120, 35)
-	quit_btn.pressed.connect(func(): get_tree().quit())
-	game_options_panel.add_child(quit_btn)
-
-	var close_btn = Button.new()
-	close_btn.text = "X"
-	close_btn.position = Vector2(335, 5)
-	close_btn.size = Vector2(25, 25)
-	close_btn.pressed.connect(func(): _close_options())
-	game_options_panel.add_child(close_btn)
-
+	game_options_panel.bg_image_changed.connect(func(path):
+		current_bg_color = Color.BLACK
+		current_bg_image = path
+		_apply_background()
+		_save_config()
+	)
+	game_options_panel.card_style_pressed.connect(func(): _open_card_style_dialog())
+	game_options_panel.main_menu_pressed.connect(func():
+		get_tree().change_scene_to_file("res://main_menu/main_menu.tscn")
+	)
+	game_options_panel.exit_pressed.connect(func(): get_tree().quit())
 	game_options_overlay.gui_input.connect(func(event):
 		if event is InputEventMouseButton and event.pressed:
 			_close_options()
@@ -913,10 +719,6 @@ func _save_config():
 	for suit in card_styles:
 		cfg.set_value("card_styles", suit, card_styles[suit])
 	cfg.save(CONFIG_PATH)
-
-func _is_bg_unlocked(fname : String) -> bool:
-	var wins_needed = BG_UNLOCK_WINS.get(fname, 999)
-	return total_wins >= wins_needed
 
 func _get_card_style_summary() -> String:
 	var styles = []

@@ -3,40 +3,12 @@ extends Control
 var menu_panel : ColorRect
 var options_panel : ColorRect
 var settings_panel : ColorRect
-var volume_slider : HSlider
-var mute_btn : Button
-var res_option : OptionButton
 var start_btn : Button
 
-const RESOLUTIONS = [
-	Vector2i(1920, 1080),
-	Vector2i(1366, 768),
-	Vector2i(1280, 720),
-	Vector2i(1024, 576),
-]
-
-const BG_FOLDER = "res://backgrounds/"
 const CARD_ASSET_FOLDER = "res://assets/card/"
 const SETTINGS_CONFIG_PATH = "user://settings.cfg"
 const GAME_CONFIG_PATH = "user://game_settings.cfg"
 const ACHIEVEMENTS_PATH = "user://achievements.cfg"
-
-const BG_COLORS = {
-	"Dark": Color(0.08, 0.08, 0.12),
-	"Green": Color(0.05, 0.15, 0.05),
-	"Blue": Color(0.05, 0.05, 0.15),
-	"Red": Color(0.15, 0.05, 0.05),
-	"Purple": Color(0.12, 0.05, 0.15),
-	"Brown": Color(0.12, 0.08, 0.05),
-	"Teal": Color(0.05, 0.12, 0.12),
-	"White": Color(0.85, 0.85, 0.85),
-}
-
-const BG_UNLOCK_WINS = {
-	"img24.jpg": 0, "img25.jpg": 1, "img26.jpg": 3, "img27.jpg": 5,
-	"img28.jpg": 8, "img29.jpg": 12, "img30.jpg": 16, "img31.jpg": 20,
-	"img32.jpg": 25, "img33.jpg": 30, "img34.jpg": 40, "img35.jpg": 50,
-}
 
 var cfg_bo := 1
 var cfg_joker := false
@@ -107,9 +79,16 @@ func _ready():
 	opt_btn.pressed.connect(func(): options_panel.visible = true)
 	menu_panel.add_child(opt_btn)
 
+	var ach_btn = Button.new()
+	ach_btn.text = "Achievements"
+	ach_btn.position = Vector2(btn_x, btn_y + 240)
+	ach_btn.size = Vector2(btn_w, btn_h)
+	ach_btn.pressed.connect(func(): get_tree().change_scene_to_file("res://achievements/achievements.tscn"))
+	menu_panel.add_child(ach_btn)
+
 	var quit_btn = Button.new()
 	quit_btn.text = "Quit"
-	quit_btn.position = Vector2(btn_x, btn_y + 240)
+	quit_btn.position = Vector2(btn_x, btn_y + 300)
 	quit_btn.size = Vector2(btn_w, btn_h)
 	quit_btn.pressed.connect(func(): get_tree().quit())
 	menu_panel.add_child(quit_btn)
@@ -138,184 +117,25 @@ func _scan_card_styles():
 		available_styles.append("default")
 
 func _create_options_panel():
-	options_panel = ColorRect.new()
-	options_panel.position = Vector2(1366 / 2 - 180, 768 / 2 - 290)
-	options_panel.size = Vector2(360, 580)
-	options_panel.color = Color(0.12, 0.12, 0.18)
+	var scene = preload("res://ui/options_panel.tscn")
+	options_panel = scene.instantiate()
 	options_panel.visible = false
 	menu_panel.add_child(options_panel)
-
-	var title_lbl = Label.new()
-	title_lbl.text = "Options"
-	title_lbl.position = Vector2(130, 10)
-	title_lbl.size = Vector2(100, 30)
-	title_lbl.add_theme_font_size_override("font_size", 18)
-	options_panel.add_child(title_lbl)
-
-	var vol_label = Label.new()
-	vol_label.text = "Volume"
-	vol_label.position = Vector2(20, 45)
-	vol_label.size = Vector2(80, 30)
-	vol_label.add_theme_font_size_override("font_size", 14)
-	options_panel.add_child(vol_label)
-
-	volume_slider = HSlider.new()
-	volume_slider.position = Vector2(100, 45)
-	volume_slider.size = Vector2(230, 30)
-	volume_slider.min_value = 0.0
-	volume_slider.max_value = 1.0
-	volume_slider.value = 1.0
-	volume_slider.step = 0.05
-	volume_slider.value_changed.connect(func(val): AudioServer.set_bus_volume_db(0, linear_to_db(val)))
-	options_panel.add_child(volume_slider)
-
-	mute_btn = Button.new()
-	mute_btn.text = "Mute"
-	mute_btn.position = Vector2(100, 80)
-	mute_btn.size = Vector2(80, 28)
-	mute_btn.toggle_mode = true
-	mute_btn.pressed.connect(func(): AudioServer.set_bus_mute(0, mute_btn.button_pressed))
-	options_panel.add_child(mute_btn)
-
-	var res_label = Label.new()
-	res_label.text = "Resolution"
-	res_label.position = Vector2(20, 120)
-	res_label.size = Vector2(80, 30)
-	res_label.add_theme_font_size_override("font_size", 14)
-	options_panel.add_child(res_label)
-
-	res_option = OptionButton.new()
-	res_option.position = Vector2(100, 120)
-	res_option.size = Vector2(230, 30)
-	for r in RESOLUTIONS:
-		res_option.add_item("%d x %d" % [r.x, r.y])
-	res_option.selected = 1
-	res_option.item_selected.connect(func(idx):
-		var r = RESOLUTIONS[idx]
-		DisplayServer.window_set_size(r)
+	options_panel.set_total_wins(total_wins)
+	options_panel.set_card_style_summary(_get_card_style_summary())
+	options_panel.show_game_buttons(false)
+	options_panel.close_pressed.connect(func(): options_panel.visible = false)
+	options_panel.bg_color_changed.connect(func(color):
+		cfg_bg_color = color
+		cfg_bg_image = ""
+		_save_settings()
 	)
-	options_panel.add_child(res_option)
-
-	var sep1 = HSeparator.new()
-	sep1.position = Vector2(20, 160)
-	sep1.size = Vector2(320, 2)
-	options_panel.add_child(sep1)
-
-	var bg_title = Label.new()
-	bg_title.text = "Background"
-	bg_title.position = Vector2(20, 170)
-	bg_title.size = Vector2(120, 25)
-	bg_title.add_theme_font_size_override("font_size", 14)
-	options_panel.add_child(bg_title)
-
-	var color_label = Label.new()
-	color_label.text = "Color:"
-	color_label.position = Vector2(20, 198)
-	color_label.size = Vector2(50, 22)
-	color_label.add_theme_font_size_override("font_size", 12)
-	options_panel.add_child(color_label)
-
-	var cx := 75.0
-	var cy := 198.0
-	for cname in BG_COLORS:
-		var swatch = Button.new()
-		swatch.position = Vector2(cx, cy)
-		swatch.size = Vector2(28, 28)
-		swatch.modulate = BG_COLORS[cname]
-		swatch.tooltip_text = cname
-		var captured_color = BG_COLORS[cname]
-		swatch.pressed.connect(func():
-			cfg_bg_color = captured_color
-			cfg_bg_image = ""
-			_save_settings()
-		)
-		options_panel.add_child(swatch)
-		cx += 32.0
-		if cx > 330.0:
-			cx = 75.0
-			cy += 32.0
-
-	var img_label = Label.new()
-	img_label.text = "Images:"
-	img_label.position = Vector2(20, cy + 38)
-	img_label.size = Vector2(50, 22)
-	img_label.add_theme_font_size_override("font_size", 12)
-	options_panel.add_child(img_label)
-
-	var img_folder_btn = Button.new()
-	img_folder_btn.text = "Open Folder"
-	img_folder_btn.position = Vector2(260, cy + 38)
-	img_folder_btn.size = Vector2(80, 22)
-	img_folder_btn.add_theme_font_size_override("font_size", 11)
-	img_folder_btn.pressed.connect(func(): OS.shell_open(ProjectSettings.globalize_path(BG_FOLDER)))
-	options_panel.add_child(img_folder_btn)
-
-	var img_grid_y = cy + 65.0
-	var img_grid_x := 20.0
-	var dir = DirAccess.open(BG_FOLDER)
-	if dir:
-		dir.list_dir_begin()
-		var fname = dir.get_next()
-		while fname != "":
-			if not dir.current_is_dir():
-				var ext = fname.get_extension().to_lower()
-				if ext in ["png", "jpg", "jpeg", "webp"]:
-					var is_unlocked = _is_bg_unlocked(fname)
-					var thumb = Button.new()
-					thumb.position = Vector2(img_grid_x, img_grid_y)
-					thumb.size = Vector2(50, 50)
-					thumb.expand_icon = true
-					thumb.tooltip_text = fname.get_basename() + (" (Win %d+)" % BG_UNLOCK_WINS.get(fname, 999)) if not is_unlocked else fname
-					var full_path = BG_FOLDER + fname
-					if is_unlocked:
-						var tex = load(full_path)
-						if tex:
-							thumb.icon = tex
-					else:
-						thumb.text = "🔒"
-						thumb.add_theme_font_size_override("font_size", 20)
-					var captured_path = full_path
-					var captured_unlocked = is_unlocked
-					thumb.pressed.connect(func():
-						if captured_unlocked:
-							cfg_bg_color = Color.BLACK
-							cfg_bg_image = captured_path
-							_save_settings()
-					)
-					if not is_unlocked:
-						thumb.disabled = true
-					options_panel.add_child(thumb)
-					img_grid_x += 55.0
-					if img_grid_x > 320.0:
-						img_grid_x = 20.0
-						img_grid_y += 55.0
-			fname = dir.get_next()
-
-	var sep2 = HSeparator.new()
-	sep2.position = Vector2(20, img_grid_y + 60)
-	sep2.size = Vector2(320, 2)
-	options_panel.add_child(sep2)
-
-	var cs_label = Label.new()
-	cs_label.text = "Card Style: %s" % _get_card_style_summary()
-	cs_label.position = Vector2(20, img_grid_y + 70)
-	cs_label.size = Vector2(220, 25)
-	cs_label.add_theme_font_size_override("font_size", 12)
-	options_panel.add_child(cs_label)
-
-	var cs_btn = Button.new()
-	cs_btn.text = "Change..."
-	cs_btn.position = Vector2(250, img_grid_y + 68)
-	cs_btn.size = Vector2(90, 28)
-	cs_btn.pressed.connect(func(): _open_card_style_dialog())
-	options_panel.add_child(cs_btn)
-
-	var close_btn = Button.new()
-	close_btn.text = "Close"
-	close_btn.position = Vector2(130, img_grid_y + 105)
-	close_btn.size = Vector2(100, 30)
-	close_btn.pressed.connect(func(): options_panel.visible = false)
-	options_panel.add_child(close_btn)
+	options_panel.bg_image_changed.connect(func(path):
+		cfg_bg_color = Color.BLACK
+		cfg_bg_image = path
+		_save_settings()
+	)
+	options_panel.card_style_pressed.connect(func(): _open_card_style_dialog())
 
 func _create_card_style_dialog():
 	card_style_overlay = ColorRect.new()
@@ -675,10 +495,6 @@ func _load_achievements():
 	else:
 		total_wins = 0
 
-func _is_bg_unlocked(fname : String) -> bool:
-	var wins_needed = BG_UNLOCK_WINS.get(fname, 999)
-	return total_wins >= wins_needed
-
 func _get_card_style_summary() -> String:
 	var styles = []
 	for suit in ["hearts", "diamonds", "spades", "clubs"]:
@@ -686,18 +502,3 @@ func _get_card_style_summary() -> String:
 	if styles[0] == styles[1] and styles[1] == styles[2] and styles[2] == styles[3]:
 		return styles[0].capitalize()
 	return "%s/%s/%s/%s" % [styles[0].capitalize(), styles[1].capitalize(), styles[2].capitalize(), styles[3].capitalize()]
-
-func _on_volume_changed(val : float):
-	AudioServer.set_bus_volume_db(0, linear_to_db(val))
-	if val > 0.0:
-		mute_btn.button_pressed = false
-		AudioServer.set_bus_mute(0, false)
-
-func _on_mute_toggled():
-	AudioServer.set_bus_mute(0, mute_btn.button_pressed)
-
-func _on_resolution_changed(idx : int):
-	var r = RESOLUTIONS[idx]
-	DisplayServer.window_set_size(r)
-	var pos = DisplayServer.window_get_position()
-	DisplayServer.window_set_position(pos)

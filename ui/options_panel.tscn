@@ -1,0 +1,155 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://ui/options_panel.gd" id="1_script"]
+
+[node name="OptionsPanel" type="ColorRect"]
+offset_left = 463.0
+offset_top = 54.0
+offset_right = 903.0
+offset_bottom = 704.0
+color = Color(0.12, 0.12, 0.18, 1)
+script = ExtResource("1_script")
+
+[node name="TitleLabel" type="Label" parent="."]
+offset_left = 130.0
+offset_top = 10.0
+offset_right = 230.0
+offset_bottom = 40.0
+theme_override_font_sizes/font_size = 18
+text = "Options"
+
+[node name="CloseButton" type="Button" parent="."]
+offset_left = 410.0
+offset_top = 5.0
+offset_right = 435.0
+offset_bottom = 30.0
+text = "X"
+
+[node name="VolumeLabel" type="Label" parent="."]
+offset_left = 20.0
+offset_top = 50.0
+offset_right = 100.0
+offset_bottom = 75.0
+theme_override_font_sizes/font_size = 14
+text = "Volume"
+
+[node name="VolumeSlider" type="HSlider" parent="."]
+offset_left = 100.0
+offset_top = 50.0
+offset_right = 330.0
+offset_bottom = 75.0
+min_value = 0.0
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="MuteButton" type="Button" parent="."]
+offset_left = 100.0
+offset_top = 85.0
+offset_right = 180.0
+offset_bottom = 110.0
+toggle_mode = true
+text = "Mute"
+
+[node name="ResolutionLabel" type="Label" parent="."]
+offset_left = 20.0
+offset_top = 130.0
+offset_right = 100.0
+offset_bottom = 155.0
+theme_override_font_sizes/font_size = 14
+text = "Resolution"
+
+[node name="ResolutionOption" type="OptionButton" parent="."]
+offset_left = 100.0
+offset_top = 130.0
+offset_right = 330.0
+offset_bottom = 155.0
+
+[node name="BgSep" type="HSeparator" parent="."]
+offset_left = 20.0
+offset_top = 170.0
+offset_right = 420.0
+offset_bottom = 172.0
+
+[node name="BgTitle" type="Label" parent="."]
+offset_left = 20.0
+offset_top = 180.0
+offset_right = 140.0
+offset_bottom = 200.0
+theme_override_font_sizes/font_size = 14
+text = "Background"
+
+[node name="ColorLabel" type="Label" parent="."]
+offset_left = 20.0
+offset_top = 205.0
+offset_right = 70.0
+offset_bottom = 225.0
+theme_override_font_sizes/font_size = 12
+text = "Color:"
+
+[node name="ColorContainer" type="GridContainer" parent="."]
+offset_left = 75.0
+offset_top = 205.0
+offset_right = 420.0
+offset_bottom = 260.0
+columns = 10
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+
+[node name="ImgLabel" type="Label" parent="."]
+offset_left = 20.0
+offset_top = 265.0
+offset_right = 70.0
+offset_bottom = 285.0
+theme_override_font_sizes/font_size = 12
+text = "Images:"
+
+[node name="ImgGrid" type="GridContainer" parent="."]
+offset_left = 20.0
+offset_top = 290.0
+offset_right = 420.0
+offset_bottom = 530.0
+columns = 6
+theme_override_constants/h_separation = 5
+theme_override_constants/v_separation = 5
+
+[node name="StyleSep" type="HSeparator" parent="."]
+offset_left = 20.0
+offset_top = 535.0
+offset_right = 420.0
+offset_bottom = 537.0
+
+[node name="CardStyleLabel" type="Label" parent="."]
+offset_left = 20.0
+offset_top = 545.0
+offset_right = 240.0
+offset_bottom = 570.0
+theme_override_font_sizes/font_size = 12
+text = "Card Style: Default"
+
+[node name="CardStyleButton" type="Button" parent="."]
+offset_left = 250.0
+offset_top = 543.0
+offset_right = 340.0
+offset_bottom = 571.0
+text = "Change..."
+
+[node name="BottomSep" type="HSeparator" parent="."]
+offset_left = 20.0
+offset_top = 580.0
+offset_right = 420.0
+offset_bottom = 582.0
+
+[node name="MainMenuButton" type="Button" parent="."]
+offset_left = 80.0
+offset_top = 595.0
+offset_right = 200.0
+offset_bottom = 625.0
+text = "Main Menu"
+
+[node name="ExitButton" type="Button" parent="."]
+offset_left = 240.0
+offset_top = 595.0
+offset_right = 360.0
+offset_bottom = 625.0
+text = "Exit Game"

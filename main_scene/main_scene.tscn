@@ -68,3 +68,32 @@ offset_top = 400.0
 offset_right = 786.0
 offset_bottom = 440.0
 text = "Play Again"
+
+[node name="Positions" type="Node2D" parent="." unique_id=1396937223]
+
+[node name="Hand0" type="Node2D" parent="Positions" unique_id=1676990733]
+position = Vector2(583, 600)
+
+[node name="Hand1" type="Node2D" parent="Positions" unique_id=395519648]
+position = Vector2(0, 274)
+
+[node name="Hand2" type="Node2D" parent="Positions" unique_id=1905522399]
+position = Vector2(583, 0)
+
+[node name="Hand3" type="Node2D" parent="Positions" unique_id=201780631]
+position = Vector2(1238, 274)
+
+[node name="Grave0" type="Node2D" parent="Positions" unique_id=1171276519]
+position = Vector2(653, 603)
+
+[node name="Grave1" type="Node2D" parent="Positions" unique_id=2013377831]
+position = Vector2(210, 384)
+
+[node name="Grave2" type="Node2D" parent="Positions" unique_id=1613234757]
+position = Vector2(653, 280)
+
+[node name="Grave3" type="Node2D" parent="Positions" unique_id=447956707]
+position = Vector2(1156, 384)
+
+[node name="Pile" type="Node2D" parent="Positions" unique_id=1583007990]
+position = Vector2(683, 424)

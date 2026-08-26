@@ -1067,7 +1067,7 @@ func _layout_hand(pi : int):
 		if c.get_parent():
 			c.get_parent().remove_child(c)
 		node.add_child(c)
-		c.set_face_up((_is_human(pi) and pi == current_player) or game_state == "game_over" or game_human_count == 1)
+		c.set_face_up((_is_human(pi) and (game_human_count == 1 or pi == current_player)) or game_state == "game_over")
 		c.z_index = i
 		c.can_click = (_is_human(pi) and pi == current_player)
 		c.can_drag = (_is_human(pi) and pi == current_player and game_state != "game_over")
@@ -1160,11 +1160,8 @@ func _upd_lbl(pi : int):
 	var suit_info = ""
 	if game_random_suit and assigned_suits.size() > pi:
 		suit_info = " [%s]" % assigned_suits[pi]
-	if pi == current_player or game_state == "game_over" or game_human_count == 1:
+	if game_state == "game_over" or (_is_human(pi)):
 		players[pi].label_node.text = "%s: %dpts (%d)%s" % [nm, sc, players[pi].hand.size(), suit_info]
-		players[pi].label_node.visible = true
-	elif _is_human(pi):
-		players[pi].label_node.text = "%s: ???" % nm
 		players[pi].label_node.visible = true
 	else:
 		players[pi].label_node.text = "%s: ???" % nm

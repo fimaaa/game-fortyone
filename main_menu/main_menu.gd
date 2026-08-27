@@ -3,7 +3,8 @@ extends Control
 var menu_panel : ColorRect
 var options_panel : ColorRect
 var settings_panel : ColorRect
-var start_btn : Button
+var local_mode_panel : ColorRect
+var local_mode_overlay : ColorRect
 
 const CARD_ASSET_FOLDER = "res://assets/card/"
 const SETTINGS_CONFIG_PATH = "user://settings.cfg"
@@ -48,47 +49,38 @@ func _ready():
 	var btn_h = 45.0
 	var btn_x = (1366 - btn_w) / 2.0
 
-	start_btn = Button.new()
-	start_btn.text = "Start"
-	start_btn.position = Vector2(btn_x, btn_y)
-	start_btn.size = Vector2(btn_w, btn_h)
-	start_btn.disabled = true
-	menu_panel.add_child(start_btn)
+	var online_btn = Button.new()
+	online_btn.text = "Play Online"
+	online_btn.position = Vector2(btn_x, btn_y)
+	online_btn.size = Vector2(btn_w, btn_h)
+	online_btn.disabled = true
+	online_btn.tooltip_text = "Coming Soon"
+	menu_panel.add_child(online_btn)
 
-	var quick_btn = Button.new()
-	quick_btn.text = "Local Game"
-	quick_btn.position = Vector2(btn_x, btn_y + 60)
-	quick_btn.size = Vector2(btn_w, btn_h)
-	quick_btn.pressed.connect(func(): _show_settings())
-	menu_panel.add_child(quick_btn)
-
-	var qn_btn = Button.new()
-	qn_btn.text = "Quick Normal"
-	qn_btn.position = Vector2(btn_x, btn_y + 120)
-	qn_btn.size = Vector2(btn_w, btn_h)
-	qn_btn.pressed.connect(func():
-		_save_game_config()
-		get_tree().change_scene_to_file("res://main_scene/main_scene.tscn")
-	)
-	menu_panel.add_child(qn_btn)
+	var local_btn = Button.new()
+	local_btn.text = "Local Game"
+	local_btn.position = Vector2(btn_x, btn_y + 60)
+	local_btn.size = Vector2(btn_w, btn_h)
+	local_btn.pressed.connect(func(): _show_local_mode())
+	menu_panel.add_child(local_btn)
 
 	var opt_btn = Button.new()
 	opt_btn.text = "Options"
-	opt_btn.position = Vector2(btn_x, btn_y + 180)
+	opt_btn.position = Vector2(btn_x, btn_y + 120)
 	opt_btn.size = Vector2(btn_w, btn_h)
 	opt_btn.pressed.connect(func(): options_panel.visible = true)
 	menu_panel.add_child(opt_btn)
 
 	var ach_btn = Button.new()
 	ach_btn.text = "Achievements"
-	ach_btn.position = Vector2(btn_x, btn_y + 240)
+	ach_btn.position = Vector2(btn_x, btn_y + 180)
 	ach_btn.size = Vector2(btn_w, btn_h)
 	ach_btn.pressed.connect(func(): get_tree().change_scene_to_file("res://achievements/achievements.tscn"))
 	menu_panel.add_child(ach_btn)
 
 	var quit_btn = Button.new()
 	quit_btn.text = "Quit"
-	quit_btn.position = Vector2(btn_x, btn_y + 300)
+	quit_btn.position = Vector2(btn_x, btn_y + 240)
 	quit_btn.size = Vector2(btn_w, btn_h)
 	quit_btn.pressed.connect(func(): get_tree().quit())
 	menu_panel.add_child(quit_btn)
@@ -99,6 +91,7 @@ func _ready():
 	_create_options_panel()
 	_create_settings_panel()
 	_create_card_style_dialog()
+	_create_local_mode_panel()
 
 	AudioServer.set_bus_volume_db(0, linear_to_db(1.0))
 
@@ -271,6 +264,67 @@ func _update_cs_dialog():
 		)
 		cs_style_list_cont.add_child(sbtn)
 		sy += 35.0
+
+func _create_local_mode_panel():
+	local_mode_overlay = ColorRect.new()
+	local_mode_overlay.position = Vector2(0, 0)
+	local_mode_overlay.size = Vector2(1366, 768)
+	local_mode_overlay.color = Color(0, 0, 0, 0.7)
+	local_mode_overlay.visible = false
+	local_mode_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	local_mode_overlay.gui_input.connect(func(event):
+		if event is InputEventMouseButton and event.pressed:
+			local_mode_panel.visible = false
+			local_mode_overlay.visible = false
+	)
+	menu_panel.add_child(local_mode_overlay)
+
+	local_mode_panel = ColorRect.new()
+	local_mode_panel.position = Vector2(1366 / 2 - 160, 768 / 2 - 100)
+	local_mode_panel.size = Vector2(320, 200)
+	local_mode_panel.color = Color(0.12, 0.12, 0.18)
+	local_mode_panel.visible = false
+	menu_panel.add_child(local_mode_panel)
+
+	var title = Label.new()
+	title.text = "Local Game"
+	title.position = Vector2(80, 10)
+	title.size = Vector2(160, 30)
+	title.add_theme_font_size_override("font_size", 20)
+	local_mode_panel.add_child(title)
+
+	var close_x = Button.new()
+	close_x.text = "X"
+	close_x.position = Vector2(290, 5)
+	close_x.size = Vector2(25, 25)
+	close_x.pressed.connect(func():
+		local_mode_panel.visible = false
+		local_mode_overlay.visible = false
+	)
+	local_mode_panel.add_child(close_x)
+
+	var normal_btn = Button.new()
+	normal_btn.text = "Normal"
+	normal_btn.position = Vector2(60, 60)
+	normal_btn.size = Vector2(200, 40)
+	normal_btn.pressed.connect(func():
+		local_mode_panel.visible = false
+		local_mode_overlay.visible = false
+		_show_settings()
+	)
+	local_mode_panel.add_child(normal_btn)
+
+	var extra_btn = Button.new()
+	extra_btn.text = "Extra"
+	extra_btn.position = Vector2(60, 115)
+	extra_btn.size = Vector2(200, 40)
+	extra_btn.disabled = true
+	extra_btn.tooltip_text = "Coming Soon"
+	local_mode_panel.add_child(extra_btn)
+
+func _show_local_mode():
+	local_mode_panel.visible = true
+	local_mode_overlay.visible = true
 
 func _show_settings():
 	cfg_bo = 1

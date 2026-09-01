@@ -47,6 +47,7 @@ var game_joker := false
 var game_random_suit := false
 var game_human_count := 1
 var game_human_delay := 2.0
+var game_grave_list := true
 var human_players : Array = []
 var round_wins : Array = [0, 0, 0, 0]
 var current_round := 0
@@ -777,6 +778,7 @@ func _load_game_config():
 		game_random_suit = cfg.get_value("game", "random_suit", false)
 		game_human_count = cfg.get_value("game", "human_count", 1)
 		game_human_delay = cfg.get_value("game", "human_delay", 2.0)
+		game_grave_list = cfg.get_value("game", "grave_list", true)
 
 func _close_options():
 	game_options_visible = false
@@ -925,7 +927,7 @@ func _on_grave_card_click(card : Control):
 		if players[pi].grave.size() > 0 and players[pi].grave[-1] == card:
 			if game_state == "pick_source" and pi == current_player:
 				_on_choice()
-			else:
+			elif game_grave_list:
 				_show_grave_list(pi)
 			return
 

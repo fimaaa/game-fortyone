@@ -16,6 +16,7 @@ var cfg_joker := false
 var cfg_random_suit := false
 var cfg_human_count := 1
 var cfg_human_delay := 2.0
+var cfg_grave_list := true
 
 var cfg_bg_color := Color(0.08, 0.08, 0.12)
 var cfg_bg_image := ""
@@ -332,6 +333,7 @@ func _show_settings():
 	cfg_random_suit = false
 	cfg_human_count = 1
 	cfg_human_delay = 2.0
+	cfg_grave_list = true
 	settings_panel.visible = true
 
 func _create_settings_panel():
@@ -349,8 +351,8 @@ func _create_settings_panel():
 	menu_panel.add_child(overlay)
 
 	settings_panel = ColorRect.new()
-	settings_panel.position = Vector2(1366 / 2 - 200, 768 / 2 - 220)
-	settings_panel.size = Vector2(400, 440)
+	settings_panel.position = Vector2(1366 / 2 - 200, 768 / 2 - 250)
+	settings_panel.size = Vector2(400, 500)
 	settings_panel.color = Color(0.12, 0.12, 0.18)
 	settings_panel.visible = false
 	menu_panel.add_child(settings_panel)
@@ -499,6 +501,26 @@ func _create_settings_panel():
 	settings_panel.add_child(delay_slider)
 	y += 50
 
+	var grave_label = Label.new()
+	grave_label.text = "Show Grave List:"
+	grave_label.position = Vector2(20, y)
+	grave_label.size = Vector2(120, 30)
+	grave_label.add_theme_font_size_override("font_size", 14)
+	settings_panel.add_child(grave_label)
+
+	var grave_btn = Button.new()
+	grave_btn.text = "ON"
+	grave_btn.position = Vector2(200, y)
+	grave_btn.size = Vector2(80, 28)
+	grave_btn.toggle_mode = true
+	grave_btn.button_pressed = true
+	grave_btn.pressed.connect(func():
+		cfg_grave_list = grave_btn.button_pressed
+		grave_btn.text = "ON" if cfg_grave_list else "OFF"
+	)
+	settings_panel.add_child(grave_btn)
+	y += 50
+
 	var sep = HSeparator.new()
 	sep.position = Vector2(20, y)
 	sep.size = Vector2(360, 2)
@@ -524,6 +546,7 @@ func _save_game_config():
 	cfg.set_value("game", "random_suit", cfg_random_suit)
 	cfg.set_value("game", "human_count", cfg_human_count)
 	cfg.set_value("game", "human_delay", cfg_human_delay)
+	cfg.set_value("game", "grave_list", cfg_grave_list)
 	cfg.save(GAME_CONFIG_PATH)
 
 func _save_settings():

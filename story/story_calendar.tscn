@@ -1,0 +1,181 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://story/story_calendar.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://story/images/lock_icon.svg" id="2_lock"]
+
+[node name="StoryCalendar" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="BgColor" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.07, 0.06, 0.1, 1)
+
+[node name="BgTexture" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch_mode = 6
+
+[node name="BackButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 15.0
+offset_right = 90.0
+offset_bottom = 55.0
+text = "Back"
+
+[node name="TitleLabel" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 533.0
+offset_top = 10.0
+offset_right = 833.0
+offset_bottom = 90.0
+
+[node name="TitleAgeLabel" type="Label" parent="TitleLabel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 44
+text = "01"
+horizontal_alignment = 1
+
+[node name="EventNameLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 333.0
+offset_top = 100.0
+offset_right = 1033.0
+offset_bottom = 140.0
+theme_override_colors/font_color = Color(0.9, 0.88, 0.8, 1)
+theme_override_font_sizes/font_size = 20
+text = "Event Name"
+horizontal_alignment = 1
+
+[node name="EventDescLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 383.0
+offset_top = 145.0
+offset_right = 983.0
+offset_bottom = 185.0
+theme_override_colors/font_color = Color(0.7, 0.68, 0.62, 1)
+theme_override_font_sizes/font_size = 13
+text = "Event description"
+horizontal_alignment = 1
+
+[node name="PlayButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 583.0
+offset_top = 195.0
+offset_right = 783.0
+offset_bottom = 240.0
+text = "Play"
+
+[node name="DateClip" type="Control" parent="."]
+layout_mode = 0
+offset_left = 233.0
+offset_top = 645.0
+offset_right = 1133.0
+offset_bottom = 735.0
+clip_contents = true
+
+[node name="DateStrip" type="HBoxContainer" parent="DateClip"]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 900.0
+offset_bottom = 90.0
+theme_override_constants/separation = 8
+alignment = 0
+
+[node name="StatusIcon" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 633.0
+offset_top = 245.0
+offset_right = 733.0
+offset_bottom = 345.0
+texture = ExtResource("2_lock")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="StatusLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 583.0
+offset_top = 350.0
+offset_right = 783.0
+offset_bottom = 390.0
+theme_override_colors/font_color = Color(0.85, 0.82, 0.75, 1)
+theme_override_font_sizes/font_size = 18
+text = "Status"
+horizontal_alignment = 1
+
+[node name="NavPrev" type="Button" parent="."]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 655.0
+offset_right = 120.0
+offset_bottom = 725.0
+text = "<"
+
+[node name="NavNext" type="Button" parent="."]
+layout_mode = 0
+offset_left = 1246.0
+offset_top = 655.0
+offset_right = 1350.0
+offset_bottom = 725.0
+text = ">"
+
+[node name="AnimOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+visible = false
+color = Color(0.05, 0.04, 0.08, 1)
+
+[node name="AnimDay" type="Label" parent="AnimOverlay"]
+layout_mode = 0
+offset_left = 483.0
+offset_top = 260.0
+offset_right = 883.0
+offset_bottom = 400.0
+theme_override_colors/font_color = Color(0.96, 0.92, 0.8, 1)
+theme_override_font_sizes/font_size = 100
+text = "01"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AnimWeekday" type="Label" parent="AnimOverlay"]
+layout_mode = 0
+offset_left = 483.0
+offset_top = 400.0
+offset_right = 883.0
+offset_bottom = 440.0
+theme_override_colors/font_color = Color(0.95, 0.85, 0.5, 1)
+theme_override_font_sizes/font_size = 20
+text = "MON"
+horizontal_alignment = 1
+
+[node name="AnimEvent" type="Label" parent="AnimOverlay"]
+layout_mode = 0
+offset_left = 383.0
+offset_top = 445.0
+offset_right = 983.0
+offset_bottom = 490.0
+theme_override_colors/font_color = Color(0.85, 0.82, 0.75, 1)
+theme_override_font_sizes/font_size = 16
+text = "Event Name"
+horizontal_alignment = 1

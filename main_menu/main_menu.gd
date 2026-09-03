@@ -58,30 +58,37 @@ func _ready():
 	online_btn.tooltip_text = "Coming Soon"
 	menu_panel.add_child(online_btn)
 
+	var story_btn = Button.new()
+	story_btn.text = "Story"
+	story_btn.position = Vector2(btn_x, btn_y + 60)
+	story_btn.size = Vector2(btn_w, btn_h)
+	story_btn.pressed.connect(func(): get_tree().change_scene_to_file("res://story/story_calendar.tscn"))
+	menu_panel.add_child(story_btn)
+
 	var local_btn = Button.new()
 	local_btn.text = "Local Game"
-	local_btn.position = Vector2(btn_x, btn_y + 60)
+	local_btn.position = Vector2(btn_x, btn_y + 120)
 	local_btn.size = Vector2(btn_w, btn_h)
 	local_btn.pressed.connect(func(): _show_local_mode())
 	menu_panel.add_child(local_btn)
 
 	var opt_btn = Button.new()
 	opt_btn.text = "Options"
-	opt_btn.position = Vector2(btn_x, btn_y + 120)
+	opt_btn.position = Vector2(btn_x, btn_y + 180)
 	opt_btn.size = Vector2(btn_w, btn_h)
 	opt_btn.pressed.connect(func(): options_panel.visible = true)
 	menu_panel.add_child(opt_btn)
 
 	var ach_btn = Button.new()
 	ach_btn.text = "Achievements"
-	ach_btn.position = Vector2(btn_x, btn_y + 180)
+	ach_btn.position = Vector2(btn_x, btn_y + 240)
 	ach_btn.size = Vector2(btn_w, btn_h)
 	ach_btn.pressed.connect(func(): get_tree().change_scene_to_file("res://achievements/achievements.tscn"))
 	menu_panel.add_child(ach_btn)
 
 	var quit_btn = Button.new()
 	quit_btn.text = "Quit"
-	quit_btn.position = Vector2(btn_x, btn_y + 240)
+	quit_btn.position = Vector2(btn_x, btn_y + 300)
 	quit_btn.size = Vector2(btn_w, btn_h)
 	quit_btn.pressed.connect(func(): get_tree().quit())
 	menu_panel.add_child(quit_btn)
